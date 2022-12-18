@@ -100,6 +100,14 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
                 {
                     g.GetComponent<Rigidbody2D>().gravityScale *= -1;
                 }
+                if (g.name == "End Scene")
+                {
+                    UnityEngine.Object.Destroy(g.transform.Find("CamLock").gameObject);
+                    g.GetComponent<BoxCollider2D>().offset = new Vector2(
+                        g.GetComponent<BoxCollider2D>().offset.x,
+                        g.GetComponent<BoxCollider2D>().offset.y + 11
+                    );
+                }
             }
         }
     }
