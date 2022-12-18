@@ -81,15 +81,41 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
                 {
                     g.transform.Translate(-2, 0, 0);
                 }
+                else if (g.name == "Hazard Respawn Trigger v2 (12)")
+                {
+                    UnityEngine.Object.Destroy(g);
+                }
             }
         }
         else if (arg1.name == "White_Palace_17")
         {
             Reverse(arg1, 115);
+            foreach (var g in arg1.GetRootGameObjects())
+            {
+                if (g.name == "Hazard Respawn Trigger v2(5)")
+                {
+                    UnityEngine.Object.Destroy(g);
+                }
+                else if (g.name == "Hazard Respawn Trigger v2(9)")
+                {
+                    UnityEngine.Object.Destroy(g);
+                }
+                else if (g.name == "Hazard Respawn Trigger v2(11)")
+                {
+                    UnityEngine.Object.Destroy(g);
+                }
+            }
         }
         else if (arg1.name == "White_Palace_19")
         {
             Reverse(arg1, 165);
+            foreach (var g in arg1.GetRootGameObjects())
+            {
+                if (g.name == "Hazard Respawn Trigger v2(8)")
+                {
+                    UnityEngine.Object.Destroy(g);
+                }
+            }
         }
         else if (arg1.name == "White_Palace_20")
         {
@@ -100,13 +126,17 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
                 {
                     g.GetComponent<Rigidbody2D>().gravityScale *= -1;
                 }
-                if (g.name == "End Scene")
+                else if (g.name == "End Scene")
                 {
                     UnityEngine.Object.Destroy(g.transform.Find("CamLock").gameObject);
                     g.GetComponent<BoxCollider2D>().offset = new Vector2(
                         g.GetComponent<BoxCollider2D>().offset.x,
                         g.GetComponent<BoxCollider2D>().offset.y + 11
                     );
+                }
+                else if (g.name == "Hazard Respawn Trigger v2")
+                {
+                    UnityEngine.Object.Destroy(g);
                 }
             }
         }
