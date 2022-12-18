@@ -33,21 +33,34 @@ namespace niaPfohtaP
             platform = preloadedObjects["White_Palace_03_hub"]["wp_plat_float_05 (1)"];
             UnityEngine.Object.Destroy(platform.GetComponent<SpriteRenderer>());
         }
-        List<GameObject> GetAllObjectsInScene()
+        private static void FindAllChildren(GameObject go, List<GameObject> allGoList)
         {
-            List<GameObject> objectsInScene = new List<GameObject>();
-            foreach (GameObject go in Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[])
+            for (int i = 0; i < go.transform.childCount; i++)
             {
-                if (go.hideFlags == HideFlags.NotEditable || go.hideFlags == HideFlags.HideAndDontSave)
-                    continue;
-                objectsInScene.Add(go);
+                allGoList.Add(go.transform.GetChild(i).gameObject);
             }
-            return objectsInScene;
+
+            for (int j = 0; j < go.transform.childCount; j++)
+            {
+                FindAllChildren(go.transform.GetChild(j).gameObject, allGoList);
+            }
+        }
+        public static List<GameObject> GetAllGameObjects(UnityEngine.SceneManagement.Scene scene)
+        {
+            List<GameObject> list = new List<GameObject>();
+            GameObject[] rootGameObjects = scene.GetRootGameObjects();
+            foreach (GameObject gameObject in rootGameObjects)
+            {
+                list.Add(gameObject);
+                FindAllChildren(gameObject, list);
+            }
+
+            return list;
         }
         private void Reverse(UnityEngine.SceneManagement.Scene scene, float height)
         {
             Dictionary<string, Vector3> oldPos = new Dictionary<string, Vector3>();
-            foreach (var g in GetAllObjectsInScene())
+            foreach (var g in GetAllGameObjects(scene))
             {
                 if (g.name.StartsWith("CameraLockArea"))
                 {
@@ -79,7 +92,7 @@ namespace niaPfohtaP
                     g.GetComponent<TransitionPoint>().entryPoint = "bot" + g.GetComponent<TransitionPoint>().entryPoint.Substring(3);
                 }
             }
-            foreach (var g in GetAllObjectsInScene())
+            foreach (var g in GetAllGameObjects(scene))
             {
                 if (g.transform.parent == null)
                 {
@@ -101,7 +114,7 @@ namespace niaPfohtaP
             if (arg1.name == "White_Palace_18")
             {
                 Reverse(arg1, 105);
-                foreach (var g in GetAllObjectsInScene())
+                foreach (var g in GetAllGameObjects(arg1))
                 {
                     if (g.name == "right1")
                     {
@@ -137,7 +150,7 @@ namespace niaPfohtaP
             else if (arg1.name == "White_Palace_17")
             {
                 Reverse(arg1, 115);
-                foreach (var g in GetAllObjectsInScene())
+                foreach (var g in GetAllGameObjects(arg1))
                 {
                     if (g.name == "Hazard Respawn Trigger v2(5)")
                     {
@@ -168,7 +181,7 @@ namespace niaPfohtaP
             else if (arg1.name == "White_Palace_19")
             {
                 Reverse(arg1, 165);
-                foreach (var g in GetAllObjectsInScene())
+                foreach (var g in GetAllGameObjects(arg1))
                 {
                     if (g.name == "Hazard Respawn Trigger v2(8)")
                     {
@@ -179,7 +192,7 @@ namespace niaPfohtaP
             else if (arg1.name == "White_Palace_20")
             {
                 Reverse(arg1, 185);
-                foreach (var g in GetAllObjectsInScene())
+                foreach (var g in GetAllGameObjects(arg1))
                 {
                     if (g.name.StartsWith("Royal Gaurd"))
                     {
