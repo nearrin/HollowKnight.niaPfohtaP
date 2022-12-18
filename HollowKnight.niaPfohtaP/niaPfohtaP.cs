@@ -22,28 +22,41 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
         UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
         ModHooks.HeroUpdateHook += ModHooks_HeroUpdateHook;
     }
+    private void Reverse(GameObject g, float yTop)
+    {
+        g.transform.position = new Vector3(
+                    g.transform.position.x,
+                    yTop - g.transform.position.y,
+                    g.transform.position.z
+        );
+        g.transform.rotation = Quaternion.Euler(
+            g.transform.rotation.eulerAngles.x + 180,
+            g.transform.rotation.eulerAngles.y,
+            g.transform.rotation.eulerAngles.z
+        );
+        if (g.name.StartsWith("CameraLockArea"))
+        {
+            g.SetActive(false);
+        }
+        if (g.name.StartsWith("top"))
+        {
+            g.name = "bot" + g.name.Substring(3);
+            g.GetComponent<TransitionPoint>().entryPoint = "top" + g.GetComponent<TransitionPoint>().entryPoint.Substring(3);
+        }
+        else if (g.name.StartsWith("bot"))
+        {
+            g.name = "top" + g.name.Substring(3);
+            g.GetComponent<TransitionPoint>().entryPoint = "bot" + g.GetComponent<TransitionPoint>().entryPoint.Substring(3);
+        }
+    }
     private void SceneManager_activeSceneChanged(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.Scene arg1)
     {
         if (!settings_.on) return;
         if (arg1.name == "White_Palace_18")
         {
-            var yTop = 105;
             foreach (var g in arg1.GetRootGameObjects())
             {
-                g.transform.position = new Vector3(
-                    g.transform.position.x,
-                    yTop - g.transform.position.y,
-                    g.transform.position.z
-                );
-                g.transform.rotation = Quaternion.Euler(
-                    g.transform.rotation.eulerAngles.x + 180,
-                    g.transform.rotation.eulerAngles.y,
-                    g.transform.rotation.eulerAngles.z
-                );
-                if (g.name.StartsWith("CameraLockArea"))
-                {
-                    g.SetActive(false);
-                }
+                Reverse(g, 105);
                 if (g.name == "wp_clouds")
                 {
                     g.transform.Find("wp_clouds_0002_1 (61)").gameObject.SetActive(false);
@@ -58,12 +71,41 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
                 }
             }
         }
+        else if (arg1.name == "White_Palace_17")
+        {
+            Dictionary<string, Vector3> oldpos = new Dictionary<string, Vector3>();
+            foreach (var g in arg1.GetAllGameObjects())
+            {
+                if (g.GetComponent<SpriteRenderer>() != null)
+                {
+                    oldpos[g.name]=g.transform.position;
+                }
+            }
+            foreach (var g in arg1.GetRootGameObjects())
+            {
+                Reverse(g, 115);
+            }
+            List<GameObject>gameObjects = new List<GameObject>();
+            foreach(var g in arg1.GetAllGameObjects())
+            {
+                if(g.GetComponent<SpriteRenderer>() != null)
+                {
+                    gameObjects.Add(g);
+                }
+            }
+            gameObjects.Sort((emp1, emp2) => emp1.transform.position.z.CompareTo(emp2.transform.position.z));
+            foreach(var g in gameObjects)
+            {
+                g.transform.position = new Vector3(g.transform.position.x, g.transform.position.y, oldpos[g.name].z);
+                Log(g.name + " " + g.transform.position.ToString()+" "+oldpos[g.name].ToString());
+            }
+        }
     }
     private void ModHooks_HeroUpdateHook()
     {
         if (Input.GetKeyDown(KeyCode.F3))
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("White_Palace_18");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("White_Palace_17");
         }
     }
     public void OnLoadGlobal(Settings settings) => settings_ = settings;
