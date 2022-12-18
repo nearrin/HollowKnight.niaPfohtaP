@@ -4,7 +4,6 @@ global using HutongGames.PlayMaker.Actions;
 global using Modding;
 global using Satchel;
 namespace niaPfohtaP;
-[Serializable]
 public class Settings
 {
     public bool on = true;
@@ -24,13 +23,8 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
     }
     private void Reverse(UnityEngine.SceneManagement.Scene scene, float height)
     {
-        Dictionary<string, Vector3> originalPostion = new Dictionary<string, Vector3>();
         foreach (var g in scene.GetAllGameObjects())
         {
-            if (g.GetComponent<SpriteRenderer>() != null || g.GetAddComponent<MeshRenderer>() != null)
-            {
-                originalPostion[g.name] = g.transform.position;
-            }
             if (g.name.StartsWith("CameraLockArea"))
             {
                 UnityEngine.Object.Destroy(g);
@@ -61,15 +55,23 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
         }
         foreach (var g in scene.GetAllGameObjects())
         {
-            if (g.GetComponent<SpriteRenderer>() != null)
+            if (g.transform.parent == null)
             {
-                g.transform.position = new Vector3(g.transform.position.x, g.transform.position.y, originalPostion[g.name].z);
+                continue;
             }
+            g.transform.localPosition = new Vector3(
+                g.transform.localPosition.x,
+                g.transform.localPosition.y,
+                -g.transform.localPosition.z
+            );
         }
     }
     private void SceneManager_activeSceneChanged(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.Scene arg1)
     {
-        if (!settings_.on) return;
+        if (!settings_.on)
+        {
+            return;
+        }
         if (arg1.name == "White_Palace_18")
         {
             Reverse(arg1, 105);
@@ -105,7 +107,7 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
     {
         if (Input.GetKeyDown(KeyCode.F3))
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("White_Palace_17");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("White_Palace_20");
         }
     }
     public void OnLoadGlobal(Settings settings) => settings_ = settings;
