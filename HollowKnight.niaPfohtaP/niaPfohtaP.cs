@@ -22,31 +22,49 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
         UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
         ModHooks.HeroUpdateHook += ModHooks_HeroUpdateHook;
     }
-    private void Reverse(GameObject g, float yTop)
+    private void Reverse(UnityEngine.SceneManagement.Scene scene, float height)
     {
-        g.transform.position = new Vector3(
+        Dictionary<string, Vector3> originalPostion = new Dictionary<string, Vector3>();
+        foreach (var g in scene.GetAllGameObjects())
+        {
+            if (g.GetComponent<SpriteRenderer>() != null || g.GetAddComponent<MeshRenderer>() != null)
+            {
+                originalPostion[g.name] = g.transform.position;
+            }
+            if (g.name.StartsWith("CameraLockArea"))
+            {
+                UnityEngine.Object.Destroy(g);
+            }
+        }
+        foreach (var g in scene.GetRootGameObjects())
+        {
+            g.transform.position = new Vector3(
                     g.transform.position.x,
-                    yTop - g.transform.position.y,
+                    height - g.transform.position.y,
                     g.transform.position.z
-        );
-        g.transform.rotation = Quaternion.Euler(
-            g.transform.rotation.eulerAngles.x + 180,
-            g.transform.rotation.eulerAngles.y,
-            g.transform.rotation.eulerAngles.z
-        );
-        if (g.name.StartsWith("CameraLockArea"))
-        {
-            g.SetActive(false);
+            );
+            g.transform.rotation = Quaternion.Euler(
+                g.transform.rotation.eulerAngles.x + 180,
+                g.transform.rotation.eulerAngles.y,
+                g.transform.rotation.eulerAngles.z
+            );
+            if (g.name.StartsWith("top"))
+            {
+                g.name = "bot" + g.name.Substring(3);
+                g.GetComponent<TransitionPoint>().entryPoint = "top" + g.GetComponent<TransitionPoint>().entryPoint.Substring(3);
+            }
+            else if (g.name.StartsWith("bot"))
+            {
+                g.name = "top" + g.name.Substring(3);
+                g.GetComponent<TransitionPoint>().entryPoint = "bot" + g.GetComponent<TransitionPoint>().entryPoint.Substring(3);
+            }
         }
-        if (g.name.StartsWith("top"))
+        foreach (var g in scene.GetAllGameObjects())
         {
-            g.name = "bot" + g.name.Substring(3);
-            g.GetComponent<TransitionPoint>().entryPoint = "top" + g.GetComponent<TransitionPoint>().entryPoint.Substring(3);
-        }
-        else if (g.name.StartsWith("bot"))
-        {
-            g.name = "top" + g.name.Substring(3);
-            g.GetComponent<TransitionPoint>().entryPoint = "bot" + g.GetComponent<TransitionPoint>().entryPoint.Substring(3);
+            if (g.GetComponent<SpriteRenderer>() != null)
+            {
+                g.transform.position = new Vector3(g.transform.position.x, g.transform.position.y, originalPostion[g.name].z);
+            }
         }
     }
     private void SceneManager_activeSceneChanged(UnityEngine.SceneManagement.Scene arg0, UnityEngine.SceneManagement.Scene arg1)
@@ -54,17 +72,9 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
         if (!settings_.on) return;
         if (arg1.name == "White_Palace_18")
         {
+            Reverse(arg1, 105);
             foreach (var g in arg1.GetRootGameObjects())
             {
-                Reverse(g, 105);
-                if (g.name == "wp_clouds")
-                {
-                    g.transform.Find("wp_clouds_0002_1 (61)").gameObject.SetActive(false);
-                }
-                if (g.name == "white_palace_floor_set_01 (49)")
-                {
-                    g.transform.Find("_0060_white (5)").gameObject.SetActive(false);
-                }
                 if (g.name == "right1")
                 {
                     g.transform.Translate(-2, 0, 0);
@@ -73,31 +83,21 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
         }
         else if (arg1.name == "White_Palace_17")
         {
-            Dictionary<string, Vector3> oldpos = new Dictionary<string, Vector3>();
+            Reverse(arg1, 115);
+        }
+        else if (arg1.name == "White_Palace_19")
+        {
+            Reverse(arg1, 165);
+        }
+        else if (arg1.name == "White_Palace_20")
+        {
+            Reverse(arg1, 185);
             foreach (var g in arg1.GetAllGameObjects())
             {
-                if (g.GetComponent<SpriteRenderer>() != null)
+                if (g.name.StartsWith("Royal Gaurd"))
                 {
-                    oldpos[g.name]=g.transform.position;
+                    g.GetComponent<Rigidbody2D>().gravityScale *= -1;
                 }
-            }
-            foreach (var g in arg1.GetRootGameObjects())
-            {
-                Reverse(g, 115);
-            }
-            List<GameObject>gameObjects = new List<GameObject>();
-            foreach(var g in arg1.GetAllGameObjects())
-            {
-                if(g.GetComponent<SpriteRenderer>() != null)
-                {
-                    gameObjects.Add(g);
-                }
-            }
-            gameObjects.Sort((emp1, emp2) => emp1.transform.position.z.CompareTo(emp2.transform.position.z));
-            foreach(var g in gameObjects)
-            {
-                g.transform.position = new Vector3(g.transform.position.x, g.transform.position.y, oldpos[g.name].z);
-                Log(g.name + " " + g.transform.position.ToString()+" "+oldpos[g.name].ToString());
             }
         }
     }
