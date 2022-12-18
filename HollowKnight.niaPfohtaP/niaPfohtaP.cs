@@ -12,14 +12,24 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
 {
     public Settings settings_ = new();
     public bool ToggleButtonInsideMenu => true;
+    private GameObject platform;
     public niaPfohtaP() : base("niaPfohtaP")
     {
     }
     public override string GetVersion() => "1.0.0.0";
+    public override List<(string, string)> GetPreloadNames()
+    {
+        return new List<(string, string)>
+        {
+            ("White_Palace_03_hub", "wp_plat_float_05 (1)")
+        };
+    }
     public override void Initialize(Dictionary<string, Dictionary<string, GameObject>> preloadedObjects)
     {
         UnityEngine.SceneManagement.SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
         ModHooks.HeroUpdateHook += ModHooks_HeroUpdateHook;
+        platform = preloadedObjects["White_Palace_03_hub"]["wp_plat_float_05 (1)"];
+        platform.RemoveComponent<SpriteRenderer>();
     }
     private void Reverse(UnityEngine.SceneManagement.Scene scene, float height)
     {
@@ -75,7 +85,7 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
         if (arg1.name == "White_Palace_18")
         {
             Reverse(arg1, 105);
-            foreach (var g in arg1.GetRootGameObjects())
+            foreach (var g in arg1.GetAllGameObjects())
             {
                 if (g.name == "right1")
                 {
@@ -85,12 +95,33 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
                 {
                     UnityEngine.Object.Destroy(g);
                 }
+                else if (g.name == "wp_saw (18)")
+                {
+                    var saw = UnityEngine.Object.Instantiate(g, g.transform.parent);
+                    saw.transform.position = new Vector3(
+                        165,
+                        80,
+                        saw.transform.position.z
+                    );
+                }
             }
+            var p = UnityEngine.Object.Instantiate(platform);
+            p.transform.position = new Vector3(
+                204.9f,
+                11.05f,
+                p.transform.position.z
+            );
+            p.transform.localScale = new Vector3(
+                p.transform.localScale.x,
+                0.05f,
+                p.transform.localScale.z
+            );
+            p.SetActive(true);
         }
         else if (arg1.name == "White_Palace_17")
         {
             Reverse(arg1, 115);
-            foreach (var g in arg1.GetRootGameObjects())
+            foreach (var g in arg1.GetAllGameObjects())
             {
                 if (g.name == "Hazard Respawn Trigger v2(5)")
                 {
@@ -105,11 +136,23 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
                     UnityEngine.Object.Destroy(g);
                 }
             }
+            var p = UnityEngine.Object.Instantiate(platform);
+            p.transform.position = new Vector3(
+                27.3f,
+                47.41f,
+                p.transform.position.z
+            );
+            p.transform.localScale = new Vector3(
+                p.transform.localScale.x,
+                0.05f,
+                p.transform.localScale.z
+            );
+            p.SetActive(true);
         }
         else if (arg1.name == "White_Palace_19")
         {
             Reverse(arg1, 165);
-            foreach (var g in arg1.GetRootGameObjects())
+            foreach (var g in arg1.GetAllGameObjects())
             {
                 if (g.name == "Hazard Respawn Trigger v2(8)")
                 {
@@ -138,6 +181,27 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
                 {
                     UnityEngine.Object.Destroy(g);
                 }
+                else if (g.name == "wp_saw (64)")
+                {
+                    var saw = UnityEngine.Object.Instantiate(g, g.transform.parent);
+                    saw.transform.position = new Vector3(
+                        231,
+                        26.07f,
+                        saw.transform.position.z
+                    );
+                    saw = UnityEngine.Object.Instantiate(g, g.transform.parent);
+                    saw.transform.position = new Vector3(
+                        231,
+                        35.07f,
+                        saw.transform.position.z
+                    );
+                    saw = UnityEngine.Object.Instantiate(g, g.transform.parent);
+                    saw.transform.position = new Vector3(
+                        231,
+                        44.07f,
+                        saw.transform.position.z
+                    );
+                }
             }
         }
     }
@@ -145,7 +209,7 @@ public class niaPfohtaP : Mod, IGlobalSettings<Settings>, IMenuMod
     {
         if (Input.GetKeyDown(KeyCode.F3))
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("White_Palace_20");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("White_Palace_18");
         }
     }
     public void OnLoadGlobal(Settings settings) => settings_ = settings;
