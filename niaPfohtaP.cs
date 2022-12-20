@@ -152,15 +152,15 @@ namespace niaPfohtaP
                 Reverse(arg1, 115);
                 foreach (var g in GetAllGameObjects(arg1))
                 {
-                    if (g.name == "Hazard Respawn Trigger v2(5)")
+                    if (g.name == "Hazard Respawn Trigger v2 (5)")
                     {
                         UnityEngine.Object.Destroy(g);
                     }
-                    else if (g.name == "Hazard Respawn Trigger v2(9)")
+                    else if (g.name == "Hazard Respawn Trigger v2 (9)")
                     {
                         UnityEngine.Object.Destroy(g);
                     }
-                    else if (g.name == "Hazard Respawn Trigger v2(11)")
+                    else if (g.name == "Hazard Respawn Trigger v2 (11)")
                     {
                         UnityEngine.Object.Destroy(g);
                     }
@@ -183,7 +183,7 @@ namespace niaPfohtaP
                 Reverse(arg1, 165);
                 foreach (var g in GetAllGameObjects(arg1))
                 {
-                    if (g.name == "Hazard Respawn Trigger v2(8)")
+                    if (g.name == "Hazard Respawn Trigger v2 (8)")
                     {
                         UnityEngine.Object.Destroy(g);
                     }
